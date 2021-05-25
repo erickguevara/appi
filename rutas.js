@@ -23,7 +23,7 @@ router.get('/',(req , res)=>{
 })
 
 router.get('/grado',(req , res)=>{
-    let sql = 'select * from grado'
+    let sql = 'select * from grado order by nid_grado'
     conexion.query(sql,(err, rows, fields)=>{
         if (err) throw err;
         else{
@@ -45,10 +45,9 @@ router.post('/upload',multiPartMiddleware,(req, res)=>{
 //agregar persona
 router.post('/',( req, res)=>{
 
-    const{nom_persona, ape_pare_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta} = req.body
+    const{nom_persona, ape_pare_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta} = req.body 
 
-    let sql = `CALL ProcedimientoInsertar('${nom_persona}','${ape_pare_pers}','${ape_mate_pers}','${nid_grado}','${fecha_naci}','${foto_ruta}')`
-
+    let sql = `CALL ProcedimientoInsertar('${nom_persona}','${ape_pare_pers}','${ape_mate_pers}','${nid_grado}','${fecha_naci}','http://localhost:3000/api/image/`+`${foto_ruta}')`
     conexion.query(sql, (err, rows, fields)=>{
         if(err) throw err
         else{
@@ -57,34 +56,8 @@ router.post('/',( req, res)=>{
         }
     })
 })
-router.post('/detalle_cronograma',( req, res)=>{
-    console.log(req.body);
-    const{id, id_grado} = req.body
-    let meses = ["Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-    
-     for (var i = 2; i < meses.length; i++) {
-        const ultimoDia = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-        
-        fecha = new Date(2021, meses.indexOf(meses[i]) + 1, 0);
-        fecha=fecha.toLocaleDateString();
-        let sql = `insert into detalle_cronograma(id_cronograma, desc_pension,monto,fecha_venci,id_grado) values('1','${meses[i]}',450,'${fecha}','${id_grado}')`;
-     
 
-    }
-    
-
-    //
-    //conexion.query(sql, (err, rows, fields)=>{
-        //if(err) throw err
-        //else{
-
-        //    res.json(rows[0])
-      //  }
-    //})
-})
-
-//up
 
 //eliminar 
 router.delete('/:id',(req, res)=>{
