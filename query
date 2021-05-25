@@ -1,0 +1,8 @@
+select CONCAT(p.nom_persona, ' ', p.ape_pate_pers,' ',p.ape_mate_pers) As Estudiante,g.nivel, 
+decro.desc_pension as persion ,decro.monto as monto, decro.fecha_venci as fecha_vencimiento,
+mov.fecha_pago, cro.year
+from persona as p 
+inner join grado as g on p.nid_grado=g.nid_grado 
+INNER join movimiento as mov on g.nid_grado=mov.id_persona
+INNER join detalle_cronograma as decro on mov.id_detalle_cronograma=decro.id_detalle_cronograma
+INNER JOIN cronograma as cro on decro.id_cronograma=cro.id_cronograma
