@@ -6,3 +6,37 @@ inner join grado as g on p.nid_grado=g.nid_grado
 INNER join movimiento as mov on g.nid_grado=mov.id_persona
 INNER join detalle_cronograma as decro on mov.id_detalle_cronograma=decro.id_detalle_cronograma
 INNER JOIN cronograma as cro on decro.id_cronograma=cro.id_cronograma
+
+----------------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ProcedimientoInsertar`(IN `nom_persona` VARCHAR(50), IN `ape_pate_pers` VARCHAR(50), IN `ape_mate_pers` VARCHAR(50), IN `nid_grado` INT(11), IN `fecha_naci` DATE, IN `foto_ruta` VARCHAR(250))
+BEGIN
+
+INSERT INTO persona(nom_persona,ape_pate_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta) VALUES(nom_persona,ape_pate_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta);
+
+SELECT LAST_INSERT_ID() INTO @id_persona;
+
+SELECT g.nivel INTO @nivel from persona as p inner join grado as g on p.nid_grado=g.nid_grado WHERE p.nid_persona=@id_persona;
+
+CASE @nivel
+WHEN 'INI' THEN SET @precio=300;
+WHEN 'PRI' THEN SET @precio=450;
+WHEN 'SEC' THEN SET @precio=540;
+END CASE;
+
+SET lc_time_names = 'es_ES';
+SET @fecha='2021-03-31';
+set @i = 0;
+while @i<10 do
+	  INSERT INTO detalle_cronograma(id_cronograma,desc_pension,monto,fecha_venci,id_grado) VALUES (1,MONTHNAME(@fecha),@precio,@fecha,nid_grado); 
+    INSERT INTO movimiento(tipo_movimiento,monto,estado,id_detalle_cronograma,id_persona) VALUES('INGRESO',@precio,'POR PAGAR',LAST_INSERT_ID(),@id_persona);
+	  set @i=@i+1;
+	  SET @fecha=DATE_ADD(@fecha, INTERVAL 1 MONTH);
+end while;
+
+select p.nid_persona,p.nom_persona,p.ape_pate_pers,p.ape_mate_pers,p.nid_grado,p.fecha_naci,p.foto_ruta ,g.desc_grado,g.nivel  from persona as p inner join grado as g on p.nid_grado=g.nid_grado WHERE p.nid_persona=@id_persona;
+END$$
+DELIMITER ;
+
+
+
