@@ -12,13 +12,13 @@ router.use(bodyParser.urlencoded({
     extends:true
 }));
 router.get('/',(req , res)=>{
-	let sql = 'select * from persona as p inner join grado as g on p.nid_grado=g.nid_grado'
-	conexion.query(sql,(err, rows, fields)=>{
-		if (err) throw err;
-		else{
-			res.json(rows)
-		}
-	})
+    let sql = 'select * from persona as p inner join grado as g on p.nid_grado=g.nid_grado'
+    conexion.query(sql,(err, rows, fields)=>{
+        if (err) throw err;
+        else{
+            res.json(rows)
+        }
+    })
 
 })
 
@@ -36,18 +36,10 @@ router.get('/grado',(req , res)=>{
 
 //upload
 router.post('/upload',multiPartMiddleware,(req, res)=>{ 
+
+    const{nom_persona, ape_pare_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta} = req.body
     var prueba= req.files.uploads[0].path.slice(8,req.files.uploads[0].path.length);
-    
-    res.json(
-       prueba
-     );
-});
-//agregar persona
-router.post('/',( req, res)=>{
-
-    const{nom_persona, ape_pare_pers,ape_mate_pers,nid_grado,fecha_naci,foto_ruta} = req.body 
-
-    let sql = `CALL ProcedimientoInsertar('${nom_persona}','${ape_pare_pers}','${ape_mate_pers}','${nid_grado}','${fecha_naci}','http://localhost:3000/api/image/`+`${foto_ruta}')`
+    let sql = `CALL ProcedimientoInsertar('${nom_persona}','${ape_pare_pers}','${ape_mate_pers}','${nid_grado}','${fecha_naci}','http://localhost:3000/api/image/`+`${prueba}')`
     conexion.query(sql, (err, rows, fields)=>{
         if(err) throw err
         else{
@@ -55,7 +47,10 @@ router.post('/',( req, res)=>{
             res.json(rows[0])
         }
     })
-})
+   
+});
+//agregar persona
+
 
 
 
@@ -74,9 +69,11 @@ router.delete('/:id',(req, res)=>{
 
 router.get('/image/:img', function(req, res){
   const{img} = req.params
+
     res.sendFile( __dirname + `/uploads/${img}` );
 }); 
 //modificar
 
 
 module.exports= router;
+
